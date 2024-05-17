@@ -16,7 +16,6 @@ public class Database {
         users = new ArrayListCustom<>(20);
         accounts = new ArrayListCustom<>(20);
         toppings = new ArrayListCustom<>(5);
-        baskets = new ArrayListCustom<>(5);
         orders = new ArrayListCustom<>(20);
         pizzas = new ArrayListCustom<>(20);
     }
@@ -129,6 +128,9 @@ public class Database {
     }
 
     public void printBasket() {
+        if (baskets.getSize() == 0) {
+            throw new IllegalArgumentException("Корзина пуста!");
+        }
         for (int i = 0; i < baskets.getSize(); i++) {
             System.out.println((i + 1) + " " + baskets.get(i));
         }
@@ -148,7 +150,6 @@ public class Database {
         basketTopping = new ArrayListCustom<>(1);
         Pizza pizza = getPizza(namePizza, size);
         basketTopping.add(toppings.get(0));
-//        int price = calculatePrice(pizza, basketTopping);
         Basket basketPosition = new Basket(pizza, basketTopping);
         baskets.add(basketPosition);
         return basketPosition;
@@ -169,12 +170,6 @@ public class Database {
         basketTopping.delete(index);
     }
 
-
-    public void clearToppingAPizza() {
-        for (int i = 0; i < basketTopping.getSize(); i++) {
-            basketTopping.delete(i);
-        }
-    }
 
     public void createAccount(String loginOwner) {
         User owner = getUser(loginOwner);
@@ -218,18 +213,28 @@ public class Database {
 
 
     public void deleteToppingFromPizza(int numberPosition, String nameTopping) {
-        Basket selectedPizza = baskets.get(numberPosition - 1);
-        var toppingSelectedPizza = selectedPizza.getTopping();
-        for (int i = 0; i < toppingSelectedPizza.getSize(); i++) {
-            if (toppingSelectedPizza.get(i).getNameTopping().equals(nameTopping)) {
-                toppingSelectedPizza.delete(i);
+        if (numberPosition < 1 || numberPosition > baskets.getSize()) {
+            throw new IllegalArgumentException("Такой пиццы нет в корзине!");
+        } else {
+            Basket selectedPizza = baskets.get(numberPosition - 1);
+            var toppingSelectedPizza = selectedPizza.getTopping();
+            boolean isFind = false;
+            for (int i = 0; i < toppingSelectedPizza.getSize(); i++) {
+                if (toppingSelectedPizza.get(i).getNameTopping().equals(nameTopping)) {
+                    toppingSelectedPizza.delete(i);
+                    isFind = true;
+                }
             }
+            if (!isFind) {
+                throw new IllegalArgumentException("Нет такой начинки");
+            }
+            if (toppingSelectedPizza.getSize() == 0) {
+                toppingSelectedPizza.add(toppings.get(0));
+            }
+            baskets.get(numberPosition - 1).setTopping(toppingSelectedPizza);
+            selectedPizza.setFullPrice();
         }
-        if (toppingSelectedPizza.getSize() == 0) {
-            toppingSelectedPizza.add(toppings.get(0));
-        }
-        baskets.get(numberPosition - 1).setTopping(toppingSelectedPizza);
-        selectedPizza.setFullPrice();
+
     }
 
 
@@ -242,23 +247,23 @@ public class Database {
         return false;
     }
 
-    public void makeAnOrder(User user, int amountToBePaid) {
+    public void makeAnOrder(Order order, User user, int transferredAmount) {
+        int fullPriceBasket = getPriceBasket();
         int balance = getAccount(user).getBalance();
-        int fullAmount = amountToBePaid + balance;
-        if (fullAmount < getPriceBasket()) {
+        if (transferredAmount + balance < fullPriceBasket) {
             throw new IllegalArgumentException("Недостаточно средств");
         } else {
-            Order order = new Order(user, baskets, getPriceBasket());
+            order.setCompositionOrder(baskets);
+            order.setPrice();
             orders.add(order);
-            if (amountToBePaid > getPriceBasket()) {
-                balance += (amountToBePaid - getPriceBasket());
-            } else {
-                balance = balance + amountToBePaid - getPriceBasket();
-            }
+            balance += (transferredAmount - fullPriceBasket);
+            System.out.println("Заказ сделан. Баланс вашего бонусного счета составляет: " + balance + "р.");
             getAccount(user).setBalance(balance);
         }
     }
 
+
+    //полная стоиость корзины
     public int getPriceBasket() {
         int fullPrice = 0;
         for (int i = 0; i < baskets.getSize(); i++) {
@@ -273,14 +278,31 @@ public class Database {
                 return accounts.get(i);
             }
         }
-        throw new IllegalArgumentException("Пицца такого размера не существует");
+        throw new IllegalArgumentException("Такого счета не существует");
     }
 
-    public void clearBasket() {
-        for (int i = 0; i < baskets.getSize(); i++) {
-            baskets.delete(i);
-            i--;
+
+    public int getBalance(User user) {
+        return getAccount(user).getBalance();
+    }
+
+    public void printOrders() {
+        for (int i = 0; i < orders.getSize(); i++) {
+            System.out.println(orders.get(i));
         }
+    }
+
+    public void printOrders(User user) {
+        for (int i = 0; i < orders.getSize(); i++) {
+            if (orders.get(i).getUser().equals(user)) {
+                System.out.println(orders.get(i));
+            }
+        }
+    }
+
+    public Order createOrder(User user) {
+        baskets = new ArrayListCustom<>(5);
+        return new Order(user, baskets);
     }
 }
 

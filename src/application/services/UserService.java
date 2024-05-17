@@ -4,7 +4,7 @@ import domain.User;
 import infrastructure.db.Database;
 
 public class UserService {
-    private Database database;
+    private final Database database;
 
     public UserService(Database database) {
         this.database = database;

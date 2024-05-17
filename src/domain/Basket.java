@@ -3,7 +3,7 @@ package domain;
 import lib.ArrayListCustom;
 
 public class Basket {
-    private Pizza pizza;
+    final private Pizza pizza;
     private ArrayListCustom<Topping> topping;
     private int fullPrice;
 
@@ -11,10 +11,6 @@ public class Basket {
         this.pizza = pizza;
         this.topping = topping;
         this.fullPrice = calculateFullPrice();
-    }
-
-    public Pizza getPizza() {
-        return pizza;
     }
 
     public ArrayListCustom<Topping> getTopping() {

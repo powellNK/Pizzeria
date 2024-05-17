@@ -5,7 +5,7 @@ import domain.Topping;
 import infrastructure.db.Database;
 
 public class ProductService {
-    private Database database;
+    private final Database database;
 
     public ProductService(Database database) {
         this.database = database;

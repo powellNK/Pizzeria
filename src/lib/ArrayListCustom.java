@@ -67,16 +67,6 @@ public class ArrayListCustom<Type> {
     }
 
 
-    public String[] toStringArray() {
-        StringBuilder s = new StringBuilder();
-
-        for (int i = 0; i < size; i++) {
-            s.append(elements[i]);
-            s.append(", ");
-        }
-        return new String[]{s.toString()};
-    }
-
     public Type get(int index) {
         if (index < 0 || index >= capacity)
             throw new IndexOutOfBoundsException();
@@ -98,9 +88,5 @@ public class ArrayListCustom<Type> {
             elements[j] = elements[j + 1];
         }
         size--;
-    }
-
-    public void edit(int index, Type editElement) {
-        elements[index] = editElement;
     }
 }

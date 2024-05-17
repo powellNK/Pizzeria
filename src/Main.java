@@ -3,6 +3,7 @@ import application.services.OrderService;
 import application.services.ProductService;
 import application.services.UserService;
 import domain.Basket;
+import domain.Order;
 import domain.User;
 import infrastructure.db.Database;
 
@@ -19,13 +20,15 @@ public class Main {
         OrderService orderService = new OrderService(db);
         AccountService accountService = new AccountService(db);
 
-
         userService.createUser("olya", "+79532844890", "89803160948v@gmail.com", true);
         userService.createUser("prob", "+71112844890", "11803160948v@gmail.com", false);
         userService.createUser("Юрий Евсеев", "+79203335455", "dsadsadas", false);
         userService.createUser("Смыслов Алексей", "+79603331122", "dsadsadas", false);
         userService.createUser("Березуцкий", "+79604445533", "dsadsadas", false);
 
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        User user = authorization(reader, userService);
+        Order order = orderService.createOrder(user);
         productService.addPizza("Сырная", 299);
         productService.addPizza("Песто", 539);
         productService.addPizza("Пепперони", 489);
@@ -45,9 +48,6 @@ public class Main {
         orderService.createBasketPosition("Песто", 30);
         orderService.addToppingInBasket(orderService.createBasketPosition("Песто", 30), "Бекон");
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-
-        User user = authorization(reader, userService);
 
         String inputCommand;
         if (user.isAdmin()) {
@@ -105,7 +105,10 @@ public class Main {
                         break;
                     }
 
-
+                    case "3": {
+                        orderService.printOrders();
+                        break;
+                    }
                     //Добавить кейсы 3,4!!
 
 
@@ -119,6 +122,7 @@ public class Main {
                 }
             } while (!inputCommand.equals("stop"));
         } else {
+
             do {
                 System.out.println("1. Меню");
                 System.out.println("2. Профиль");
@@ -132,6 +136,9 @@ public class Main {
                     }
                     case "2": {
 
+
+                        System.out.println("История заказов");
+                        orderService.printOrders(user);
                         //Добавить возможность просмотреть свою историю заказов??
 
                         accountService.printUserAccount(user);
@@ -189,36 +196,42 @@ public class Main {
                         System.out.println("Выберите размер:");
                         System.out.println("25     30      35");
                         int size = Integer.parseInt(reader.readLine());
-                        Basket basket = orderService.createBasketPosition(namePizza, size);
+                        try {
+                            Basket basket = orderService.createBasketPosition(namePizza, size);
 
-                        do {
-                            System.out.println("Добавить начинку? (yes/no)");
-                            inputCommand = reader.readLine();
-                            if (inputCommand.equals("yes")) {
-                                productService.printToppings();
-                                System.out.println("Введите название");
-                                String nameTopping = reader.readLine();
+                            do {
+                                System.out.println("Добавить начинку? (yes/no)");
+                                inputCommand = reader.readLine();
+                                if (inputCommand.equals("yes")) {
+                                    productService.printToppings();
+                                    System.out.println("Введите название");
+                                    String nameTopping = reader.readLine();
 
-                                boolean isToppingExistsInBasket = orderService.isToppingExistsInPizza(basket, nameTopping);
-                                if (isToppingExistsInBasket) {
-                                    System.out.println("Такая начинка уже добавлена!");
-                                } else {
-                                    orderService.addToppingInBasket(basket, nameTopping);
+                                    boolean isToppingExistsInBasket = orderService.isToppingExistsInPizza(basket, nameTopping);
+                                    if (isToppingExistsInBasket) {
+                                        System.out.println("Такая начинка уже добавлена!");
+                                    } else {
+                                        orderService.addToppingInBasket(basket, nameTopping);
+                                    }
+
                                 }
+                                orderService.printBasket();
+                            } while (inputCommand.equals("yes"));
+                        } catch (Exception exception) {
+                            System.out.println(exception.getMessage());
+                        }
 
-                            }
-                            orderService.printBasket();
-                        } while (inputCommand.equals("yes"));
-//                        orderService.clearToppingAPizza();
-
-
-                        //Здесь должна формироваться корзина
 
                         break;
                     }
 
                     case "4": { //корзина
-                        orderService.printBasket();
+                        try {
+                            orderService.printBasket();
+                        } catch (Exception exception) {
+                            System.out.println(exception.getMessage());
+                        }
+
                         System.out.println("1. Сделать заказ");
                         System.out.println("2. Удалить пиццу");
                         System.out.println("3. Удалить начинку");
@@ -229,13 +242,23 @@ public class Main {
 
                         String command = reader.readLine();
                         switch (command) {
-                            case "1": {  //добавить try catch
-                                orderService.printBasket();
+                            case "1": {
+                                try {
+                                    orderService.printBasket();
+                                } catch (Exception exception) {
+                                    System.out.println(exception.getMessage());
+                                }
+
+                                System.out.println("Сумма к оплате: " + orderService.getFullPriceBasket());
+                                System.out.println("Баланс бонусного счета: " + accountService.getBalance(user));
                                 System.out.println("Введите сумму: ");
-                                int amountToBePaid = Integer.parseInt(reader.readLine());
-                                orderService.makeOrder(user, amountToBePaid);
-                                System.out.println("Заказ сделан");
-                                orderService.ClearBasket();
+                                int transferredAmount = Integer.parseInt(reader.readLine());
+                                try {
+                                    orderService.makeOrder(order, user, transferredAmount);
+                                    order = orderService.createOrder(user);
+                                } catch (Exception exception) {
+                                    System.out.println(exception.getMessage());
+                                }
                                 break;
                             }
                             case "2": {
@@ -246,7 +269,6 @@ public class Main {
                                 break;
                             }
                             case "3": {
-                                //ДОБАВИТЬ try catch, если не найдены
                                 orderService.printBasket();
                                 System.out.println("Введите номер пиццы");
                                 int numberPosition = Integer.parseInt(reader.readLine());

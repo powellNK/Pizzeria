@@ -9,26 +9,13 @@ public class Topping {
         this.price = price;
     }
 
-    public Topping() {
-    }
 
     public String getNameTopping() {
         return nameTopping;
     }
 
-    public void setNameTopping(String nameTopping) {
-        this.nameTopping = nameTopping;
-    }
-
     public int getPrice() {
         return price;
-    }
-
-    public void setPrice(int price) {
-        if (price <= 0) {
-            throw new IllegalArgumentException("Цена не может быть отрицательной");
-        }
-        this.price = price;
     }
 
     @Override

@@ -1,11 +1,12 @@
 package application.services;
 
 import domain.Basket;
+import domain.Order;
 import domain.User;
 import infrastructure.db.Database;
 
 public class OrderService {
-    private Database database;
+    private final Database database;
 
     public OrderService(Database database) {
         this.database = database;
@@ -23,10 +24,6 @@ public class OrderService {
         database.addToppingInBasket(basket, nameTopping);
     }
 
-    public void clearToppingAPizza() {
-        database.clearToppingAPizza();
-    }
-
     public void deletePizzaFromBasket(int numberPosition) {
         database.deletePizzaFromBasket(numberPosition);
     }
@@ -39,11 +36,23 @@ public class OrderService {
         return database.isToppingExistsInPizza(basket, nameTopping);
     }
 
-    public void makeOrder(User user, int amountToBePaid) {
-        database.makeAnOrder(user, amountToBePaid);
+    public void makeOrder(Order order, User user, int transferredAmount) {
+        database.makeAnOrder(order, user, transferredAmount);
     }
 
-    public void ClearBasket() {
-        database.clearBasket();
+    public int getFullPriceBasket() {
+        return database.getPriceBasket();
+    }
+
+    public void printOrders() {
+        database.printOrders();
+    }
+
+    public Order createOrder(User user) {
+        return database.createOrder(user);
+    }
+
+    public void printOrders(User user) {
+        database.printOrders(user);
     }
 }

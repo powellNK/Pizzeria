@@ -11,34 +11,18 @@ public class Pizza {
         this.size = size;
     }
 
-    public Pizza() {
-    }
 
     public String getNamePizza() {
         return namePizza;
     }
 
-    public void setNamePizza(String namePizza) {
-        this.namePizza = namePizza;
-    }
 
     public int getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
-        if (price <= 0) {
-            throw new IllegalArgumentException("Цена не может быть отрицательной");
-        }
-        this.price = price;
-    }
-
     public int getSize() {
         return size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
     }
 
     @Override
