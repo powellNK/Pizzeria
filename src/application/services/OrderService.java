@@ -1,6 +1,7 @@
 package application.services;
 
 import domain.Basket;
+import domain.User;
 import infrastructure.db.Database;
 
 public class OrderService {
@@ -32,5 +33,17 @@ public class OrderService {
 
     public void deleteToppingFromPizza(int numberPosition, String nameTopping) {
         database.deleteToppingFromPizza(numberPosition, nameTopping);
+    }
+
+    public boolean isToppingExistsInPizza(Basket basket, String nameTopping) {
+        return database.isToppingExistsInPizza(basket, nameTopping);
+    }
+
+    public void makeOrder(User user, int amountToBePaid) {
+        database.makeAnOrder(user, amountToBePaid);
+    }
+
+    public void ClearBasket() {
+        database.clearBasket();
     }
 }

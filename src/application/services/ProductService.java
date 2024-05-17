@@ -63,9 +63,5 @@ public class ProductService {
         database.deleteTopping(nameTopping);
     }
 
-
-    public Pizza getPizza(String pizzaName) {
-        return database.getPizza(pizzaName);
-    }
 }
 

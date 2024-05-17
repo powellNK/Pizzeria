@@ -21,6 +21,7 @@ public class Main {
 
 
         userService.createUser("olya", "+79532844890", "89803160948v@gmail.com", true);
+        userService.createUser("prob", "+71112844890", "11803160948v@gmail.com", false);
         userService.createUser("Юрий Евсеев", "+79203335455", "dsadsadas", false);
         userService.createUser("Смыслов Алексей", "+79603331122", "dsadsadas", false);
         userService.createUser("Березуцкий", "+79604445533", "dsadsadas", false);
@@ -72,71 +73,30 @@ public class Main {
                         switch (inputCommand) {
                             //добавить пиццу
                             case "1": {
-                                System.out.println("Введите название: ");
-                                String namePizza = reader.readLine();
-                                boolean isPizzaExists = productService.isPizzaExists(namePizza);
-                                if (isPizzaExists) {
-                                    System.out.println("Такая пицца уже существует");
-                                    break;
-                                }
-
-                                System.out.println("Введите цену: ");
-                                int pricePizza = Integer.parseInt(reader.readLine());
-                                try {
-                                    productService.addPizza(namePizza, pricePizza);
-                                } catch (Exception exception) {
-                                    System.out.println(exception.getMessage());
-                                }
-
+                                addPizzaToMenu(reader, productService);
                                 break;
                             }
 
-                            //удалить пиццу
+                            //удалить пиццу из меню
                             case "2": {
                                 productService.printPizza(3);
-                                System.out.println("Введите название: ");
-                                String namePizza = reader.readLine();
-                                boolean isPizzaExists = productService.isPizzaExists(namePizza);
-                                if (!isPizzaExists) {
-                                    System.out.println("Такой пиццы нет");
-                                    break;
-                                }
-                                productService.deletePizza(namePizza);
+                                deletePizzaFromMenu(reader, productService);
                                 break;
                             }
 
                             //добавить начинку
                             case "3": {
-                                System.out.println("Введите начинку: ");
-                                String nameTopping = reader.readLine();
-                                boolean isToppingExists = productService.isToppingExists(nameTopping);
-                                if (isToppingExists) {
-                                    System.out.println("Такая начинка уже существует");
-                                    break;
-                                }
-                                System.out.println("Введите цену: ");
-                                int priceTopping = Integer.parseInt(reader.readLine());
-                                try {
-                                    productService.addTopping(nameTopping, priceTopping);
-                                } catch (Exception exception) {
-                                    System.out.println(exception.getMessage());
-                                }
-
+                                addToppingToMenu(reader, productService);
                                 break;
                             }
+
                             //удалить начинку
                             case "4": {
                                 productService.printToppings();
-                                System.out.println("Введите название: ");
-                                String nameTopping = reader.readLine();
-                                boolean isToppingExists = productService.isToppingExists(nameTopping);
-                                if (!isToppingExists) {
-                                    System.out.println("Такой начинки нет");
-                                    break;
-                                }
-                                productService.deleteTopping(nameTopping);
+                                deleteToppingFromMenu(reader, productService);
                                 break;
                             }
+
                             default: {
                                 System.out.println("Неверная команда");
                                 break;
@@ -144,11 +104,13 @@ public class Main {
                         }
                         break;
                     }
+
+
+                    //Добавить кейсы 3,4!!
+
+
                     case "5": {
-                        System.out.println("ПИЦЦА");
-                        productService.printPizza();
-                        System.out.println("НАЧИНКИ");
-                        productService.printToppings();
+                        printThePizzeriaMenu(productService);
                         break;
                     }
                     case "stop": {
@@ -165,13 +127,13 @@ public class Main {
                 inputCommand = reader.readLine();
                 switch (inputCommand) {
                     case "1": {
-                        System.out.println("ПИЦЦА");
-                        productService.printPizza(3);
-                        System.out.println("НАЧИНКИ");
-                        productService.printToppings();
+                        printThePizzeriaMenu(productService);
                         break;
                     }
                     case "2": {
+
+                        //Добавить возможность просмотреть свою историю заказов??
+
                         accountService.printUserAccount(user);
                         do {
                             System.out.println("Изменить данные пользователя? (yes/no)");
@@ -182,6 +144,8 @@ public class Main {
                                 System.out.println("3. Выйти");
                                 String command = reader.readLine();
                                 switch (command) {
+                                    //изменить номер телефона
+
                                     case "1": {
                                         System.out.println("Введите новый номер телефона");
                                         String newPhoneNumber = reader.readLine();
@@ -192,6 +156,8 @@ public class Main {
                                         }
                                         break;
                                     }
+
+                                    //изменить email
                                     case "2": {
                                         System.out.println("Введите новый email");
                                         String newEmail = reader.readLine();
@@ -207,6 +173,9 @@ public class Main {
 
                         break;
                     }
+
+
+                    //добавить пиццу в корзину
                     case "3": {
                         System.out.println("Введите название");
                         String namePizza = reader.readLine();
@@ -215,19 +184,28 @@ public class Main {
                             System.out.println("Такой пиццы нет");
                             break;
                         }
+
+                        //проверку на соответствие размеру добавить (try catch)
                         System.out.println("Выберите размер:");
                         System.out.println("25     30      35");
                         int size = Integer.parseInt(reader.readLine());
                         Basket basket = orderService.createBasketPosition(namePizza, size);
+
                         do {
-                            //Добавить проверку на повторы
                             System.out.println("Добавить начинку? (yes/no)");
                             inputCommand = reader.readLine();
                             if (inputCommand.equals("yes")) {
                                 productService.printToppings();
                                 System.out.println("Введите название");
                                 String nameTopping = reader.readLine();
-                                orderService.addToppingInBasket(basket, nameTopping);
+
+                                boolean isToppingExistsInBasket = orderService.isToppingExistsInPizza(basket, nameTopping);
+                                if (isToppingExistsInBasket) {
+                                    System.out.println("Такая начинка уже добавлена!");
+                                } else {
+                                    orderService.addToppingInBasket(basket, nameTopping);
+                                }
+
                             }
                             orderService.printBasket();
                         } while (inputCommand.equals("yes"));
@@ -246,29 +224,39 @@ public class Main {
                         System.out.println("3. Удалить начинку");
                         System.out.println("4. Выйти");
 
+
+                        //Добавить ===== Добавить начинку к выбранной пицце!
+
                         String command = reader.readLine();
                         switch (command) {
-                            case "1": {
+                            case "1": {  //добавить try catch
+                                orderService.printBasket();
+                                System.out.println("Введите сумму: ");
+                                int amountToBePaid = Integer.parseInt(reader.readLine());
+                                orderService.makeOrder(user, amountToBePaid);
+                                System.out.println("Заказ сделан");
+                                orderService.ClearBasket();
                                 break;
                             }
                             case "2": {
-                                //добавить try catch на выход из границ индекса???
-
                                 orderService.printBasket();
                                 System.out.println("Введите номер пиццы");
                                 int numberPosition = Integer.parseInt(reader.readLine());
                                 orderService.deletePizzaFromBasket(numberPosition);
-                                System.out.println("Удалена из корзины");
                                 break;
                             }
                             case "3": {
-                                //ДОБАВИТЬ try catch везде и при удалении последней начинки добавить "Без начинки"
+                                //ДОБАВИТЬ try catch, если не найдены
                                 orderService.printBasket();
                                 System.out.println("Введите номер пиццы");
                                 int numberPosition = Integer.parseInt(reader.readLine());
                                 System.out.println("Введите начинку");
                                 String nameTopping = reader.readLine();
-                                orderService.deleteToppingFromPizza(numberPosition, nameTopping);
+                                try {
+                                    orderService.deleteToppingFromPizza(numberPosition, nameTopping);
+                                } catch (Exception exception) {
+                                    System.out.println(exception.getMessage());
+                                }
                                 break;
                             }
                             default: {
@@ -282,6 +270,70 @@ public class Main {
         }
 
 
+    }
+
+    private static void addPizzaToMenu(BufferedReader reader, ProductService productService) throws IOException {
+        System.out.println("Введите название: ");
+        String namePizza = reader.readLine();
+        boolean isPizzaExists = productService.isPizzaExists(namePizza);
+        if (isPizzaExists) {
+            System.out.println("Такая пицца уже существует");
+            return;
+        }
+
+        System.out.println("Введите цену: ");
+        int pricePizza = Integer.parseInt(reader.readLine());
+        try {
+            productService.addPizza(namePizza, pricePizza);
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+        }
+    }
+
+    private static void deleteToppingFromMenu(BufferedReader reader, ProductService productService) throws IOException {
+        System.out.println("Введите название: ");
+        String nameTopping = reader.readLine();
+        boolean isToppingExists = productService.isToppingExists(nameTopping);
+        if (!isToppingExists) {
+            System.out.println("Такой начинки нет");
+            return;
+        }
+        productService.deleteTopping(nameTopping);
+    }
+
+    private static void addToppingToMenu(BufferedReader reader, ProductService productService) throws IOException {
+        System.out.println("Введите начинку: ");
+        String nameTopping = reader.readLine();
+        boolean isToppingExists = productService.isToppingExists(nameTopping);
+        if (isToppingExists) {
+            System.out.println("Такая начинка уже существует");
+            return;
+        }
+        System.out.println("Введите цену: ");
+        int priceTopping = Integer.parseInt(reader.readLine());
+        try {
+            productService.addTopping(nameTopping, priceTopping);
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
+        }
+    }
+
+    private static void deletePizzaFromMenu(BufferedReader reader, ProductService productService) throws IOException {
+        System.out.println("Введите название: ");
+        String namePizza = reader.readLine();
+        boolean isPizzaExists = productService.isPizzaExists(namePizza);
+        if (!isPizzaExists) {
+            System.out.println("Такой пиццы нет");
+            return;
+        }
+        productService.deletePizza(namePizza);
+    }
+
+    private static void printThePizzeriaMenu(ProductService productService) {
+        System.out.println("ПИЦЦА");
+        productService.printPizza();
+        System.out.println("НАЧИНКИ");
+        productService.printToppings();
     }
 
     private static User authorization(BufferedReader reader, UserService userService) {

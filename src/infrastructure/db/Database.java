@@ -4,21 +4,18 @@ import domain.*;
 import lib.ArrayListCustom;
 
 public class Database {
-    private ArrayListCustom<User> users;
+    final private ArrayListCustom<User> users;
     private ArrayListCustom<Account> accounts;
     private ArrayListCustom<Topping> toppings;
     private ArrayListCustom<Basket> baskets;
     private ArrayListCustom<Order> orders;
     private ArrayListCustom<Pizza> pizzas;
-    private ArrayListCustom<Transaction> transactions;
-
     private ArrayListCustom<Topping> basketTopping;
 
     public Database() {
         users = new ArrayListCustom<>(20);
         accounts = new ArrayListCustom<>(20);
         toppings = new ArrayListCustom<>(5);
-        transactions = new ArrayListCustom<>(100);
         baskets = new ArrayListCustom<>(5);
         orders = new ArrayListCustom<>(20);
         pizzas = new ArrayListCustom<>(20);
@@ -121,15 +118,6 @@ public class Database {
         }
     }
 
-    public int getPricePizza(String namePizza) {
-        for (int i = 0; i < pizzas.getSize(); i++) {
-            if (pizzas.get(i).getNamePizza().equals(namePizza)) {
-                return pizzas.get(i).getPrice();
-            }
-        }
-        throw new IllegalArgumentException("Такого пользователя не существует");
-    }
-
     public Pizza getPizza(String pizzaName) throws IllegalArgumentException {
         for (int i = 0; i < pizzas.getSize(); i++) {
             if (pizzas.get(i).getNamePizza().equals(pizzaName)) {
@@ -161,7 +149,7 @@ public class Database {
                 return pizzas.get(i);
             }
         }
-        throw new IllegalArgumentException("Такой пиццы не существует");
+        throw new IllegalArgumentException("Пицца такого размера не существует");
     }
 
     public Basket createBasketPosition(String namePizza, int size) {
@@ -252,9 +240,15 @@ public class Database {
     }
 
     public void deletePizzaFromBasket(int numberPosition) {
-        for (int i = numberPosition - 1; i < baskets.getSize(); i++) {
-            baskets.delete(i);
+        if (numberPosition < 1 || numberPosition > baskets.getSize()) {
+            System.out.println("Такой пиццы нет в корзине");
+        } else {
+            for (int i = numberPosition - 1; i < baskets.getSize(); i++) {
+                System.out.println(baskets.get(i) + " удалена из корзины");
+                baskets.delete(i);
+            }
         }
+
     }
 
     public int getIndexToppingFromBasket(String nameTopping) throws IllegalArgumentException {
@@ -268,13 +262,69 @@ public class Database {
 
     public void deleteToppingFromPizza(int numberPosition, String nameTopping) {
         Basket selectedPizza = baskets.get(numberPosition - 1);
-        var array = selectedPizza.getTopping();
-        for (int i = 0; i < array.getSize(); i++) {
-            if (array.get(i).getNameTopping().equals(nameTopping)) {
-                array.delete(i);
+        var toppingSelectedPizza = selectedPizza.getTopping();
+        for (int i = 0; i < toppingSelectedPizza.getSize(); i++) {
+            if (toppingSelectedPizza.get(i).getNameTopping().equals(nameTopping)) {
+                toppingSelectedPizza.delete(i);
             }
         }
-        baskets.get(numberPosition - 1).setTopping(array);
+        if (toppingSelectedPizza.getSize() == 0) {
+            toppingSelectedPizza.add(toppings.get(0));
+        }
+        baskets.get(numberPosition - 1).setTopping(toppingSelectedPizza);
     }
 
+
+    public boolean isToppingExistsInPizza(Basket basket, String nameTopping) {
+        for (int i = 0; i < basket.getTopping().getSize(); i++) {
+            if (basket.getTopping().get(i).getNameTopping().equals(nameTopping)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void makeAnOrder(User user, int amountToBePaid) {
+        int balance = getAccount(user).getBalance();
+        int fullAmount = amountToBePaid + balance;
+        if (fullAmount < getPriceBasket()) {
+            throw new IllegalArgumentException("Недостаточно средств");
+        } else {
+            Order order = new Order(user, baskets, getPriceBasket());
+            orders.add(order);
+            if (amountToBePaid > getPriceBasket()) {
+                balance += (amountToBePaid - getPriceBasket());
+            } else {
+                balance = balance + amountToBePaid - getPriceBasket();
+            }
+            getAccount(user).setBalance(balance);
+        }
+    }
+
+    public int getPriceBasket() {
+        int fullPrice = 0;
+        for (int i = 0; i < baskets.getSize(); i++) {
+            fullPrice += baskets.get(i).getFullPrice();
+        }
+        return fullPrice;
+    }
+
+    public Account getAccount(User user) throws IllegalArgumentException {
+        for (int i = 0; i < accounts.getSize(); i++) {
+            if (accounts.get(i).getOwner().equals(user)) {
+                return accounts.get(i);
+            }
+        }
+        throw new IllegalArgumentException("Пицца такого размера не существует");
+    }
+
+    public void clearBasket() {
+        for (int i = 0; i < baskets.getSize(); i++) {
+            baskets.delete(i);
+            i--;
+        }
+    }
 }
+
+// УДАЛИТЬ ЛИШНИЕ ФУНКЦИИ
+// причесать существующие до адеквата

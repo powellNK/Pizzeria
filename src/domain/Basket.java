@@ -29,6 +29,8 @@ public class Basket {
         this.topping = topping;
     }
 
+
+    //Сюда задать логику расчета полной стоимости корзины?
     public int getFullPrice() {
         return fullPrice;
     }

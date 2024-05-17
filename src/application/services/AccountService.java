@@ -10,10 +10,6 @@ public class AccountService {
         this.database = database;
     }
 
-    public void createAccount(String loginOwner) {
-        database.createAccount(loginOwner);
-    }
-
     public void printAccounts() {
         database.printAccounts();
     }
