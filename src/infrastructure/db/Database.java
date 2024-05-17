@@ -118,14 +118,6 @@ public class Database {
         }
     }
 
-    public Pizza getPizza(String pizzaName) throws IllegalArgumentException {
-        for (int i = 0; i < pizzas.getSize(); i++) {
-            if (pizzas.get(i).getNamePizza().equals(pizzaName)) {
-                return pizzas.get(i);
-            }
-        }
-        throw new IllegalArgumentException("Такой пиццы не существует");
-    }
 
     public Topping getTopping(String nameTopping) throws IllegalArgumentException {
         for (int i = 0; i < toppings.getSize(); i++) {
@@ -155,7 +147,6 @@ public class Database {
     public Basket createBasketPosition(String namePizza, int size) {
         basketTopping = new ArrayListCustom<>(1);
         Pizza pizza = getPizza(namePizza, size);
-        clearToppingAPizza();
         basketTopping.add(toppings.get(0));
         int price = calculatePrice(pizza, basketTopping);
         Basket basketPosition = new Basket(pizza, basketTopping, price);
@@ -191,17 +182,8 @@ public class Database {
         basket.setFullPrice(calculatePrice(basket));
     }
 
-    private void deleteToppingOfBasket(int index) {
-        basketTopping.delete(index);
-    }
-
     private void deleteToppingOfBasket(Topping topping) {
         int index = basketTopping.getIndex(topping);
-        basketTopping.delete(index);
-    }
-
-    private void deleteToppingOfBasket(String nameTopping) {
-        int index = getIndexToppingFromBasket(nameTopping);
         basketTopping.delete(index);
     }
 
@@ -251,14 +233,6 @@ public class Database {
 
     }
 
-    public int getIndexToppingFromBasket(String nameTopping) throws IllegalArgumentException {
-        for (int i = 0; i < basketTopping.getSize(); i++) {
-            if (basketTopping.get(i).getNameTopping().equals(nameTopping)) {
-                return i;
-            }
-        }
-        throw new IllegalArgumentException("Такой начинки не существует");
-    }
 
     public void deleteToppingFromPizza(int numberPosition, String nameTopping) {
         Basket selectedPizza = baskets.get(numberPosition - 1);
