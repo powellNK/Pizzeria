@@ -7,18 +7,14 @@ public class Basket {
     private ArrayListCustom<Topping> topping;
     private int fullPrice;
 
-    public Basket(Pizza pizza, ArrayListCustom<Topping> topping, int fullPrice) {
+    public Basket(Pizza pizza, ArrayListCustom<Topping> topping) {
         this.pizza = pizza;
         this.topping = topping;
-        this.fullPrice = fullPrice;
+        this.fullPrice = calculateFullPrice();
     }
 
     public Pizza getPizza() {
         return pizza;
-    }
-
-    public void setPizza(Pizza pizza) {
-        this.pizza = pizza;
     }
 
     public ArrayListCustom<Topping> getTopping() {
@@ -29,14 +25,22 @@ public class Basket {
         this.topping = topping;
     }
 
+    public int calculateFullPrice() {
+        fullPrice = 0;
+        for (int i = 0; i < topping.getSize(); i++) {
+            fullPrice += topping.get(i).getPrice();
+        }
+        fullPrice += pizza.getPrice();
+        return fullPrice;
 
-    //Сюда задать логику расчета полной стоимости корзины?
+    }
+
     public int getFullPrice() {
         return fullPrice;
     }
 
-    public void setFullPrice(int fullPrice) {
-        this.fullPrice = fullPrice;
+    public void setFullPrice() {
+        this.fullPrice = calculateFullPrice();
     }
 
     @Override

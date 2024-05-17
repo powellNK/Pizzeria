@@ -13,21 +13,6 @@ public class Order {
         this.price = price;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public ArrayListCustom<Basket> getCompositionOrder() {
-        return compositionOrder;
-    }
-
-    public void setCompositionOrder(ArrayListCustom<Basket> compositionOrder) {
-        this.compositionOrder = compositionOrder;
-    }
 
     public int getPrice() {
         return price;

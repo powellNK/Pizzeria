@@ -9,15 +9,8 @@ public class Account {
         this.balance = balance;
     }
 
-    public Account() {
-    }
-
     public User getOwner() {
         return owner;
-    }
-
-    public void setOwner(User owner) {
-        this.owner = owner;
     }
 
     public int getBalance() {

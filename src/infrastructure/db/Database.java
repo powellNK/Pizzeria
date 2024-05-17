@@ -148,28 +148,10 @@ public class Database {
         basketTopping = new ArrayListCustom<>(1);
         Pizza pizza = getPizza(namePizza, size);
         basketTopping.add(toppings.get(0));
-        int price = calculatePrice(pizza, basketTopping);
-        Basket basketPosition = new Basket(pizza, basketTopping, price);
+//        int price = calculatePrice(pizza, basketTopping);
+        Basket basketPosition = new Basket(pizza, basketTopping);
         baskets.add(basketPosition);
         return basketPosition;
-    }
-
-    private int calculatePrice(Pizza pizza, ArrayListCustom<Topping> basketTopping) {
-        int fullPrice = 0;
-        for (int i = 0; i < basketTopping.getSize(); i++) {
-            fullPrice += basketTopping.get(i).getPrice();
-        }
-        fullPrice += pizza.getPrice();
-        return fullPrice;
-    }
-
-    private int calculatePrice(Basket basket) {
-        int fullPrice = 0;
-        for (int i = 0; i < basketTopping.getSize(); i++) {
-            fullPrice += basketTopping.get(i).getPrice();
-        }
-        fullPrice += basket.getPizza().getPrice();
-        return fullPrice;
     }
 
     public void addToppingInBasket(Basket basket, String nameTopping) {
@@ -179,13 +161,14 @@ public class Database {
         }
         basketTopping.add(getTopping(nameTopping));
         basket.setTopping(basketTopping);
-        basket.setFullPrice(calculatePrice(basket));
+        basket.setFullPrice();
     }
 
     private void deleteToppingOfBasket(Topping topping) {
         int index = basketTopping.getIndex(topping);
         basketTopping.delete(index);
     }
+
 
     public void clearToppingAPizza() {
         for (int i = 0; i < basketTopping.getSize(); i++) {
@@ -246,6 +229,7 @@ public class Database {
             toppingSelectedPizza.add(toppings.get(0));
         }
         baskets.get(numberPosition - 1).setTopping(toppingSelectedPizza);
+        selectedPizza.setFullPrice();
     }
 
 
