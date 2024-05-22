@@ -6,7 +6,7 @@ import java.io.Serializable;
 public class Account implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-    private User owner;
+    private final User owner;
     private int balance;
 
     public Account(User owner, int balance) {
@@ -28,9 +28,7 @@ public class Account implements Serializable {
 
     @Override
     public String toString() {
-        return "Account{" +
-                "owner=" + owner +
-                ", balance=" + balance +
-                '}';
+        return owner +
+                ", Баланс: " + balance;
     }
 }

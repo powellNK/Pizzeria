@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class Order implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-    private User user;
+    private final User user;
     private ArrayListCustom<Basket> compositionOrder;
     private int price;
 
@@ -29,10 +29,6 @@ public class Order implements Serializable {
 
     public User getUser() {
         return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public void setCompositionOrder(ArrayListCustom<Basket> compositionOrder) {

@@ -6,9 +6,9 @@ import java.io.Serializable;
 public class Pizza implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-    private String namePizza;
-    private int price;
-    private int size;
+    private final String namePizza;
+    private final int price;
+    private final int size;
 
     public Pizza(String namePizza, int price, int size) {
         this.namePizza = namePizza;

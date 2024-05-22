@@ -7,10 +7,10 @@ import java.util.Objects;
 public class User implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-    private String login;
+    private final String login;
     private String phoneNumber;
     private String email;
-    private boolean isAdmin;
+    private final boolean isAdmin;
 
     public User(String login, String phoneNumber, String email, boolean isAdmin) {
         this.login = login;

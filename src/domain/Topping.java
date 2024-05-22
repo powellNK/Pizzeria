@@ -6,8 +6,8 @@ import java.io.Serializable;
 public class Topping implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
-    private String nameTopping;
-    private int price;
+    private final String nameTopping;
+    private final int price;
 
     public Topping(String nameTopping, int price) {
         this.nameTopping = nameTopping;

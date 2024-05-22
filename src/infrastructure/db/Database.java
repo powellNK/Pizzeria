@@ -14,7 +14,6 @@ public class Database implements Serializable {
     private ArrayListCustom<Basket> baskets;
     private ArrayListCustom<Order> orders;
     private ArrayListCustom<Pizza> pizzas;
-    private ArrayListCustom<Topping> basketTopping;
 
     public Database() {
         users = new ArrayListCustom<>(20);
@@ -67,12 +66,6 @@ public class Database implements Serializable {
         createAccount(createdUser.getLogin());
 
         saveDB();
-    }
-
-    public void printUsers() {
-        for (int i = 0; i < users.getSize(); i++) {
-            System.out.println(users.get(i));
-        }
     }
 
     public User getUser(String login) throws IllegalArgumentException {
@@ -175,7 +168,7 @@ public class Database implements Serializable {
             throw new IllegalArgumentException("Корзина пуста!");
         }
         for (int i = 0; i < baskets.getSize(); i++) {
-            System.out.println((i + 1) + " " + baskets.get(i));
+            System.out.println(STR."\{i + 1} \{baskets.get(i)}");
         }
     }
 
@@ -190,10 +183,11 @@ public class Database implements Serializable {
     }
 
     public Basket createBasketPosition(String name, int size) {
-        basketTopping = new ArrayListCustom<>(1);
+
         Pizza pizza = getPizza(name, size);
-        basketTopping.add(toppings.get(0));
-        Basket basketPosition = new Basket(pizza, basketTopping);
+        ArrayListCustom<Topping> toppingInPizza = new ArrayListCustom<>(1);
+        toppingInPizza.add(toppings.get(0));
+        Basket basketPosition = new Basket(pizza, toppingInPizza);
         baskets.add(basketPosition);
         saveDB();
         return basketPosition;
@@ -201,19 +195,14 @@ public class Database implements Serializable {
     }
 
     public void addToppingInBasket(Basket basket, String nameTopping) {
-
-        if (basketTopping.contains(toppings.get(0))) {
-            deleteToppingOfBasket(toppings.get(0));
+        var toppingInPizza = basket.getTopping();
+        toppingInPizza.add(getTopping(nameTopping));
+        if (toppingInPizza.contains(toppings.get(0))) {
+            toppingInPizza.delete(0);
         }
-        basketTopping.add(getTopping(nameTopping));
-        basket.setTopping(basket.getTopping());
+        basket.setTopping(toppingInPizza);
         basket.setFullPrice();
         saveDB();
-    }
-
-    private void deleteToppingOfBasket(Topping topping) {
-        int index = basketTopping.getIndex(topping);
-        basketTopping.delete(index);
     }
 
 
@@ -251,7 +240,7 @@ public class Database implements Serializable {
     public void deletePizzaFromBasket(int numberPosition) {
 
         for (int i = numberPosition - 1; i < baskets.getSize(); i++) {
-            System.out.println(baskets.get(i) + " удалена из корзины");
+            System.out.println(STR."\{baskets.get(i)} удалена из корзины");
             baskets.delete(i);
         }
 
@@ -282,7 +271,6 @@ public class Database implements Serializable {
         saveDB();
     }
 
-
     public boolean isToppingExistsInPizza(Basket basket, String nameTopping) {
         for (int i = 0; i < basket.getTopping().getSize(); i++) {
             if (basket.getTopping().get(i).getNameTopping().equals(nameTopping)) {
@@ -295,14 +283,16 @@ public class Database implements Serializable {
     public void makeAnOrder(Order order, User user, int transferredAmount) {
         int fullPriceBasket = getPriceBasket();
         int balance = getAccount(user).getBalance();
-        if (transferredAmount + balance < fullPriceBasket) {
+        if (transferredAmount < 0) {
+            throw new IllegalArgumentException("Сумма не может быть отрицательной!");
+        } else if (transferredAmount + balance < fullPriceBasket) {
             throw new IllegalArgumentException("Недостаточно средств");
         } else {
             order.setCompositionOrder(baskets);
             order.setPrice();
             orders.add(order);
             balance += (transferredAmount - fullPriceBasket);
-            System.out.println("Заказ сделан. Баланс вашего бонусного счета составляет: " + balance + "р.");
+            System.out.println(STR."Заказ сделан. Баланс вашего бонусного счета составляет: \{balance}р.");
             getAccount(user).setBalance(balance);
         }
         saveDB();

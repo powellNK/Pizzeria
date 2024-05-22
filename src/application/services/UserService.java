@@ -20,10 +20,6 @@ public class UserService {
         database.addUser(createdUser);
     }
 
-    public void printUsers() {
-        database.printUsers();
-    }
-
     public User getUser(String login) {
         return database.getUser(login);
     }
