@@ -1,6 +1,11 @@
 package domain;
 
-public class Account {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class Account implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private User owner;
     private int balance;
 

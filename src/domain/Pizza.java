@@ -1,6 +1,11 @@
 package domain;
 
-public class Pizza {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class Pizza implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private String namePizza;
     private int price;
     private int size;

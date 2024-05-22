@@ -1,6 +1,11 @@
 package lib;
 
-public class ArrayListCustom<Type> {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class ArrayListCustom<Type> implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private Type[] elements;
     private int size; // реальный
     private int capacity; // максимальный
@@ -28,18 +33,18 @@ public class ArrayListCustom<Type> {
         elements[size++] = newElement;
     }
 
-    public void add(int index, Type newElement) {
-        if (index > capacity || index < 0) {
-            throw new IndexOutOfBoundsException();
-        }
-        if (size == capacity)
-            resize();
-        for (int i = size; i > index; i--) {
-            elements[i] = elements[i - 1];
-        }
-        elements[index] = newElement;
-        size++;
-    }
+//    public void add(int index, Type newElement) {
+//        if (index > capacity || index < 0) {
+//            throw new IndexOutOfBoundsException();
+//        }
+//        if (size == capacity)
+//            resize();
+//        for (int i = size; i > index; i--) {
+//            elements[i] = elements[i - 1];
+//        }
+//        elements[index] = newElement;
+//        size++;
+//    }
 
     private void resize() {
         Type[] newArray = (Type[]) new Object[capacity * 2];
@@ -55,13 +60,12 @@ public class ArrayListCustom<Type> {
 
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder("[");
+        StringBuilder s = new StringBuilder(" ");
 
         for (int i = 0; i < size; i++) {
             s.append(elements[i]);
-            s.append(", ");
+            s.append(" ");
         }
-        s.append("]");
 
         return s.toString();
     }

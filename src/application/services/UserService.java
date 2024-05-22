@@ -12,11 +12,11 @@ public class UserService {
 
 
     //по умолчанию все не админы!!
-    public void createUser(String loginUser, String phoneUser, String emailUser, boolean isAdmin) {
-        if (!((phoneUser.length() == 12 && phoneUser.startsWith("+7")) || (phoneUser.length() == 11 && phoneUser.startsWith("8")))) {
+    public void createUser(String login, String phone, String email, boolean isAdmin) {
+        if (!((phone.length() == 12 && phone.startsWith("+7")) || (phone.length() == 11 && phone.startsWith("8")))) {
             throw new IllegalArgumentException("Неверный номер телефона");
         }
-        User createdUser = new User(loginUser, phoneUser, emailUser, isAdmin);
+        User createdUser = new User(login, phone, email, isAdmin);
         database.addUser(createdUser);
     }
 
@@ -24,12 +24,12 @@ public class UserService {
         database.printUsers();
     }
 
-    public User getUser(String userLogin) {
-        return database.getUser(userLogin);
+    public User getUser(String login) {
+        return database.getUser(login);
     }
 
-    public boolean isUserExists(String loginUser) {
-        return database.isUserExists(loginUser);
+    public boolean isUserExists(String login) {
+        return database.isUserExists(login);
     }
 
     public void editUserPhone(User user, String newPhoneNumber) {

@@ -1,6 +1,11 @@
 package domain;
 
-public class Topping {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class Topping implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private String nameTopping;
     private int price;
 

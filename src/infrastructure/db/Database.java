@@ -3,8 +3,12 @@ package infrastructure.db;
 import domain.*;
 import lib.ArrayListCustom;
 
-public class Database {
-    final private ArrayListCustom<User> users;
+import java.io.*;
+
+public class Database implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+    private ArrayListCustom<User> users;
     private ArrayListCustom<Account> accounts;
     private ArrayListCustom<Topping> toppings;
     private ArrayListCustom<Basket> baskets;
@@ -20,6 +24,39 @@ public class Database {
         pizzas = new ArrayListCustom<>(20);
     }
 
+    public void setUsers(ArrayListCustom<User> users) {
+        this.users = users;
+    }
+
+    public void setAccounts(ArrayListCustom<Account> accounts) {
+        this.accounts = accounts;
+    }
+
+    public void setToppings(ArrayListCustom<Topping> toppings) {
+        this.toppings = toppings;
+    }
+
+    public void setOrders(ArrayListCustom<Order> orders) {
+        this.orders = orders;
+    }
+
+    public void setPizzas(ArrayListCustom<Pizza> pizzas) {
+        this.pizzas = pizzas;
+    }
+
+    public void saveDB() {
+        try (
+                ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("db.serialization"))) {
+            oos.writeObject(users);
+            oos.writeObject(accounts);
+            oos.writeObject(toppings);
+            oos.writeObject(orders);
+            oos.writeObject(pizzas);
+        } catch (IOException exception) {
+            System.out.println("Не удалось сохранить данные");
+        }
+    }
+
     public void addUser(User createdUser) {
         for (int i = 0; i < users.getSize(); i++) {
             if (createdUser.equals(users.get(i))) {
@@ -28,6 +65,8 @@ public class Database {
         }
         users.add(createdUser);
         createAccount(createdUser.getLogin());
+
+        saveDB();
     }
 
     public void printUsers() {
@@ -36,18 +75,18 @@ public class Database {
         }
     }
 
-    public User getUser(String userFullName) throws IllegalArgumentException {
+    public User getUser(String login) throws IllegalArgumentException {
         for (int i = 0; i < users.getSize(); i++) {
-            if (users.get(i).getLogin().equals(userFullName)) {
+            if (users.get(i).getLogin().equals(login)) {
                 return users.get(i);
             }
         }
         throw new IllegalArgumentException("Такого пользователя не существует");
     }
 
-    public boolean isUserExists(String loginUser) {
+    public boolean isUserExists(String login) {
         for (int i = 0; i < users.getSize(); i++) {
-            if (users.get(i).getLogin().equals(loginUser)) {
+            if (users.get(i).getLogin().equals(login)) {
                 return true;
             }
         }
@@ -56,6 +95,7 @@ public class Database {
 
     public void addPizza(Pizza pizza) {
         pizzas.add(pizza);
+        saveDB();
     }
 
     public void printPizza() {
@@ -70,18 +110,18 @@ public class Database {
         }
     }
 
-    public boolean isPizzaExists(String namePizza) {
+    public boolean isPizzaExists(String name) {
         for (int i = 0; i < pizzas.getSize(); i++) {
-            if (pizzas.get(i).getNamePizza().equals(namePizza)) {
+            if (pizzas.get(i).getNamePizza().equals(name)) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean isToppingExists(String nameTopping) {
+    public boolean isToppingExists(String name) {
         for (int i = 0; i < toppings.getSize(); i++) {
-            if (toppings.get(i).getNameTopping().equals(nameTopping)) {
+            if (toppings.get(i).getNameTopping().equals(name)) {
                 return true;
             }
         }
@@ -90,16 +130,18 @@ public class Database {
 
     public void addTopping(Topping createdTopping) {
         toppings.add(createdTopping);
+        saveDB();
     }
 
-    public void deletePizza(String namePizza) {
+    public void deletePizza(String name) {
 
         for (int i = 0; i < pizzas.getSize(); i++) {
-            if (pizzas.get(i).getNamePizza().equals(namePizza)) {
+            if (pizzas.get(i).getNamePizza().equals(name)) {
                 pizzas.delete(i);
                 i--;
             }
         }
+        saveDB();
     }
 
     public void printToppings() {
@@ -108,19 +150,20 @@ public class Database {
         }
     }
 
-    public void deleteTopping(String nameTopping) {
+    public void deleteTopping(String name) {
         for (int i = 0; i < toppings.getSize(); i++) {
-            if (toppings.get(i).getNameTopping().equals(nameTopping)) {
+            if (toppings.get(i).getNameTopping().equals(name)) {
                 toppings.delete(i);
                 i--;
             }
         }
+        saveDB();
     }
 
 
-    public Topping getTopping(String nameTopping) throws IllegalArgumentException {
+    public Topping getTopping(String name) throws IllegalArgumentException {
         for (int i = 0; i < toppings.getSize(); i++) {
-            if (toppings.get(i).getNameTopping().equals(nameTopping)) {
+            if (toppings.get(i).getNameTopping().equals(name)) {
                 return toppings.get(i);
             }
         }
@@ -137,22 +180,24 @@ public class Database {
     }
 
 
-    public Pizza getPizza(String pizzaName, int size) throws IllegalArgumentException {
+    public Pizza getPizza(String name, int size) throws IllegalArgumentException {
         for (int i = 0; i < pizzas.getSize(); i++) {
-            if (pizzas.get(i).getNamePizza().equals(pizzaName) && pizzas.get(i).getSize() == size) {
+            if (pizzas.get(i).getNamePizza().equals(name) && pizzas.get(i).getSize() == size) {
                 return pizzas.get(i);
             }
         }
         throw new IllegalArgumentException("Пицца такого размера не существует");
     }
 
-    public Basket createBasketPosition(String namePizza, int size) {
+    public Basket createBasketPosition(String name, int size) {
         basketTopping = new ArrayListCustom<>(1);
-        Pizza pizza = getPizza(namePizza, size);
+        Pizza pizza = getPizza(name, size);
         basketTopping.add(toppings.get(0));
         Basket basketPosition = new Basket(pizza, basketTopping);
         baskets.add(basketPosition);
+        saveDB();
         return basketPosition;
+
     }
 
     public void addToppingInBasket(Basket basket, String nameTopping) {
@@ -161,8 +206,9 @@ public class Database {
             deleteToppingOfBasket(toppings.get(0));
         }
         basketTopping.add(getTopping(nameTopping));
-        basket.setTopping(basketTopping);
+        basket.setTopping(basket.getTopping());
         basket.setFullPrice();
+        saveDB();
     }
 
     private void deleteToppingOfBasket(Topping topping) {
@@ -175,6 +221,7 @@ public class Database {
         User owner = getUser(loginOwner);
         Account account = new Account(owner, 0);
         accounts.add(account);
+        saveDB();
     }
 
     public void printAccounts() {
@@ -193,48 +240,46 @@ public class Database {
 
     public void editUserPhone(User user, String newPhoneNumber) {
         user.setPhoneNumber(newPhoneNumber);
+        saveDB();
     }
 
     public void editUserEmail(User user, String newEmail) {
         user.setEmail(newEmail);
+        saveDB();
     }
 
     public void deletePizzaFromBasket(int numberPosition) {
-        if (numberPosition < 1 || numberPosition > baskets.getSize()) {
-            System.out.println("Такой пиццы нет в корзине");
-        } else {
-            for (int i = numberPosition - 1; i < baskets.getSize(); i++) {
-                System.out.println(baskets.get(i) + " удалена из корзины");
-                baskets.delete(i);
-            }
+
+        for (int i = numberPosition - 1; i < baskets.getSize(); i++) {
+            System.out.println(baskets.get(i) + " удалена из корзины");
+            baskets.delete(i);
         }
+
+        saveDB();
 
     }
 
 
     public void deleteToppingFromPizza(int numberPosition, String nameTopping) {
-        if (numberPosition < 1 || numberPosition > baskets.getSize()) {
-            throw new IllegalArgumentException("Такой пиццы нет в корзине!");
-        } else {
-            Basket selectedPizza = baskets.get(numberPosition - 1);
-            var toppingSelectedPizza = selectedPizza.getTopping();
-            boolean isFind = false;
-            for (int i = 0; i < toppingSelectedPizza.getSize(); i++) {
-                if (toppingSelectedPizza.get(i).getNameTopping().equals(nameTopping)) {
-                    toppingSelectedPizza.delete(i);
-                    isFind = true;
-                }
+        Basket selectedPizza = getPizzaFromBasket(numberPosition);
+        var toppingSelectedPizza = selectedPizza.getTopping();
+        boolean isFind = false;
+        for (int i = 0; i < toppingSelectedPizza.getSize(); i++) {
+            if (toppingSelectedPizza.get(i).getNameTopping().equals(nameTopping)) {
+                toppingSelectedPizza.delete(i);
+                isFind = true;
             }
-            if (!isFind) {
-                throw new IllegalArgumentException("Нет такой начинки");
-            }
-            if (toppingSelectedPizza.getSize() == 0) {
-                toppingSelectedPizza.add(toppings.get(0));
-            }
-            baskets.get(numberPosition - 1).setTopping(toppingSelectedPizza);
-            selectedPizza.setFullPrice();
         }
+        if (!isFind) {
+            throw new IllegalArgumentException("Нет такой начинки");
+        }
+        if (toppingSelectedPizza.getSize() == 0) {
+            toppingSelectedPizza.add(toppings.get(0));
+        }
+        selectedPizza.setTopping(toppingSelectedPizza);
+        selectedPizza.setFullPrice();
 
+        saveDB();
     }
 
 
@@ -260,6 +305,7 @@ public class Database {
             System.out.println("Заказ сделан. Баланс вашего бонусного счета составляет: " + balance + "р.");
             getAccount(user).setBalance(balance);
         }
+        saveDB();
     }
 
 
@@ -289,6 +335,7 @@ public class Database {
     public void printOrders() {
         for (int i = 0; i < orders.getSize(); i++) {
             System.out.println(orders.get(i));
+            System.out.println();
         }
     }
 
@@ -304,7 +351,12 @@ public class Database {
         baskets = new ArrayListCustom<>(5);
         return new Order(user, baskets);
     }
-}
 
-// УДАЛИТЬ ЛИШНИЕ ФУНКЦИИ
-// причесать существующие до адеквата
+    public boolean isPizzaExistsInBasket(int numberPosition) {
+        return numberPosition >= 1 && numberPosition <= baskets.getSize();
+    }
+
+    public Basket getPizzaFromBasket(Integer numberPosition) {
+        return baskets.get(numberPosition - 1);
+    }
+}

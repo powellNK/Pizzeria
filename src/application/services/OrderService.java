@@ -55,4 +55,12 @@ public class OrderService {
     public void printOrders(User user) {
         database.printOrders(user);
     }
+
+    public boolean isPizzaExistsInBasket(int numberPosition) {
+        return database.isPizzaExistsInBasket(numberPosition);
+    }
+
+    public Basket getPizzaFromBasket(Integer numberPosition) {
+        return database.getPizzaFromBasket(numberPosition);
+    }
 }

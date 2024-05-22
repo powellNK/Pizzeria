@@ -2,7 +2,12 @@ package domain;
 
 import lib.ArrayListCustom;
 
-public class Order {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class Order implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private User user;
     private ArrayListCustom<Basket> compositionOrder;
     private int price;
@@ -40,10 +45,9 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order{" +
-                "user=" + user +
-                ", compositionOrder=" + compositionOrder +
-                ", price=" + price +
-                '}';
+        return "Пользователь: " + user.getLogin() +
+                "\nЗаказ: \n" + compositionOrder +
+                "\nОбщая сумма чека " + price +
+                "р.";
     }
 }

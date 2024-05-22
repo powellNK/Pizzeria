@@ -1,8 +1,12 @@
 package domain;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class User {
+public class User implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private String login;
     private String phoneNumber;
     private String email;
@@ -35,12 +39,9 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "login='" + login + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", email='" + email + '\'' +
-                ", isAdmin=" + isAdmin +
-                '}';
+        return login + '\'' +
+                phoneNumber + '\'' +
+                ", email='" + email + '\'';
     }
 
     @Override

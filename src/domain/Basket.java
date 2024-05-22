@@ -2,7 +2,12 @@ package domain;
 
 import lib.ArrayListCustom;
 
-public class Basket {
+import java.io.Serial;
+import java.io.Serializable;
+
+public class Basket implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     final private Pizza pizza;
     private ArrayListCustom<Topping> topping;
     private int fullPrice;
@@ -41,10 +46,8 @@ public class Basket {
 
     @Override
     public String toString() {
-        return "Basket{" +
-                "Pizza=" + pizza +
-                ", topping=" + topping +
-                ", fullPrice=" + fullPrice +
-                '}';
+        return "Пицца " + pizza +
+                "\n     Доп. начинки: " + topping +
+                "   =" + fullPrice + "р.";
     }
 }
