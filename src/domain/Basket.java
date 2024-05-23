@@ -9,12 +9,12 @@ public class Basket implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     final private Pizza pizza;
-    private ArrayListCustom<Topping> topping;
+    private ArrayListCustom<Topping> topping = new ArrayListCustom<>(1);
     private int fullPrice;
 
-    public Basket(Pizza pizza, ArrayListCustom<Topping> topping) {
+    public Basket(Pizza pizza, Topping topping) {
         this.pizza = pizza;
-        this.topping = topping;
+        this.topping = addTopping(topping);
         this.fullPrice = calculateFullPrice();
     }
 
@@ -22,25 +22,40 @@ public class Basket implements Serializable {
         return topping;
     }
 
-    public void setTopping(ArrayListCustom<Topping> topping) {
-        this.topping = topping;
-    }
-
-    public int calculateFullPrice() {
+    private int calculateFullPrice() {
         fullPrice = 0;
         for (int i = 0; i < topping.getSize(); i++) {
             fullPrice += topping.get(i).getPrice();
         }
         fullPrice += pizza.getPrice();
         return fullPrice;
-
     }
+
+    public ArrayListCustom<Topping> addTopping(Topping topping) {
+        this.topping.add(topping);
+        setFullPrice();
+        return this.topping;
+    }
+
+    public void deleteTopping(Topping topping) {
+        boolean isFind = false;
+        for (int i = 0; i < this.topping.getSize(); i++) {
+            if (this.topping.get(i).equals(topping)) {
+                this.topping.delete(i);
+            }
+        }
+        if (!isFind) {
+            throw new IllegalArgumentException("Нет такой начинки");
+        }
+        setFullPrice();
+    }
+
 
     public int getFullPrice() {
         return fullPrice;
     }
 
-    public void setFullPrice() {
+    private void setFullPrice() {
         this.fullPrice = calculateFullPrice();
     }
 

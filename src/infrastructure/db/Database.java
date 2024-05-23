@@ -183,11 +183,8 @@ public class Database implements Serializable {
     }
 
     public Basket createBasketPosition(String name, int size) {
-
         Pizza pizza = getPizza(name, size);
-        ArrayListCustom<Topping> toppingInPizza = new ArrayListCustom<>(1);
-        toppingInPizza.add(toppings.get(0));
-        Basket basketPosition = new Basket(pizza, toppingInPizza);
+        Basket basketPosition = new Basket(pizza, toppings.get(0));
         baskets.add(basketPosition);
         saveDB();
         return basketPosition;
@@ -195,13 +192,10 @@ public class Database implements Serializable {
     }
 
     public void addToppingInBasket(Basket basket, String nameTopping) {
-        var toppingInPizza = basket.getTopping();
-        toppingInPizza.add(getTopping(nameTopping));
-        if (toppingInPizza.contains(toppings.get(0))) {
-            toppingInPizza.delete(0);
+        basket.addTopping(getTopping(nameTopping));
+        if (basket.getTopping().contains(toppings.get(0))) {
+            basket.getTopping().delete(0);
         }
-        basket.setTopping(toppingInPizza);
-        basket.setFullPrice();
         saveDB();
     }
 
@@ -251,23 +245,10 @@ public class Database implements Serializable {
 
     public void deleteToppingFromPizza(int numberPosition, String nameTopping) {
         Basket selectedPizza = getPizzaFromBasket(numberPosition);
-        var toppingSelectedPizza = selectedPizza.getTopping();
-        boolean isFind = false;
-        for (int i = 0; i < toppingSelectedPizza.getSize(); i++) {
-            if (toppingSelectedPizza.get(i).getNameTopping().equals(nameTopping)) {
-                toppingSelectedPizza.delete(i);
-                isFind = true;
-            }
+        selectedPizza.deleteTopping(getTopping(nameTopping));
+        if (selectedPizza.getTopping().getSize() == 0) {
+            selectedPizza.addTopping(toppings.get(0));
         }
-        if (!isFind) {
-            throw new IllegalArgumentException("Нет такой начинки");
-        }
-        if (toppingSelectedPizza.getSize() == 0) {
-            toppingSelectedPizza.add(toppings.get(0));
-        }
-        selectedPizza.setTopping(toppingSelectedPizza);
-        selectedPizza.setFullPrice();
-
         saveDB();
     }
 
