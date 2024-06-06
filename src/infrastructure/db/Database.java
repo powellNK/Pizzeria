@@ -245,6 +245,9 @@ public class Database implements Serializable {
 
     public void deleteToppingFromPizza(int numberPosition, String nameTopping) {
         Basket selectedPizza = getPizzaFromBasket(numberPosition);
+        if (!selectedPizza.getTopping().contains(getTopping(nameTopping))) {
+            throw new IllegalArgumentException("Нет такой начинки");
+        }
         selectedPizza.deleteTopping(getTopping(nameTopping));
         if (selectedPizza.getTopping().getSize() == 0) {
             selectedPizza.addTopping(toppings.get(0));

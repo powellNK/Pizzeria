@@ -38,14 +38,10 @@ public class Basket implements Serializable {
     }
 
     public void deleteTopping(Topping topping) {
-        boolean isFind = false;
         for (int i = 0; i < this.topping.getSize(); i++) {
             if (this.topping.get(i).equals(topping)) {
                 this.topping.delete(i);
             }
-        }
-        if (!isFind) {
-            throw new IllegalArgumentException("Нет такой начинки");
         }
         setFullPrice();
     }
